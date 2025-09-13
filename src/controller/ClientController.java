@@ -1,10 +1,10 @@
 package controller;
 
 import model.Client;
+import model.ClientType;
 
 public interface ClientController {
 
-    Client createClient();
-
+    Client createClient(ClientType type);
 
 }
