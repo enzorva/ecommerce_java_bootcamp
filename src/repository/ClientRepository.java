@@ -35,4 +35,11 @@ public class ClientRepository implements Repository<Client, String> {
     public Client findById(String id) {
         return clientes.get(id);
     }
+
+    public Client findByDocument(String document) {
+        return clientes.values().stream()
+                .filter(c -> c.getDocumentIdentification().equals(document))
+                .findFirst()
+                .orElse(null);
+    }
 }
