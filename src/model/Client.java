@@ -51,7 +51,7 @@ public abstract class Client {
 
     @Override
     public String toString() {
-        return "ID: " + id + " | Name: " + name + " | Email: " + email +
-                " | Phone: " + phone + " | Document: " + getDocumentIdentification();
+        return "ID: " + id + "\nName: " + name + "\nEmail: " + email +
+                "\nPhone: " + phone + "\nDocument: " + getDocumentIdentification();
     }
 }
