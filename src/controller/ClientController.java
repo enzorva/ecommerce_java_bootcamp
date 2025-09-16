@@ -5,6 +5,12 @@ import model.ClientType;
 
 public interface ClientController {
 
-    Client createClient(ClientType type);
+    public Client createClient(ClientType type);
+
+    public void listAllClients();
+
+    public void updateClient();
+
+    public void searchByDocument();
 
 }
