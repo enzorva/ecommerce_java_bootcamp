@@ -17,10 +17,9 @@ public class Main {
         var service = new ProductService(repository);
         var controller = new ProductController(service);
         try (Scanner scanner = new Scanner(System.in)) {
-            runMenu(controller, scanner);
-        }
->>>>>>> fa48e85ecab5b48459b64856827429f3389de3df
+        runMenu(controller, scanner);
     }
+}
     private static void runMenu(ProductController controller, Scanner scanner) {
         while (true) {
             printMenu();
