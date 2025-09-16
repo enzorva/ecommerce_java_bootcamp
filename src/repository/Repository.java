@@ -11,4 +11,5 @@ public interface Repository<T, E> {
     List<T> findAll();
 
     T findById(E id);
+
 }
