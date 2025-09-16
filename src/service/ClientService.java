@@ -4,7 +4,7 @@ import java.util.List;
 
 import model.Client;
 import repository.ClientRepository;
-import repository.ClientValidator;
+import validation.ClientValidator;
 
 public class ClientService {
     private final ClientRepository repository;
@@ -17,7 +17,7 @@ public class ClientService {
 
     public Client register(Client client) {
         if (!validator.validate(client)) {
-            throw new IllegalArgumentException("Cliente inválido! Verifique os dados obrigatórios.");
+            throw new IllegalArgumentException("Cliente inválido!");
         }
         return repository.save(client);
     }
@@ -28,8 +28,24 @@ public class ClientService {
 
     public Client update(Client client) {
         if (!validator.validate(client)) {
-            throw new IllegalArgumentException("Cliente inválido! Verifique os dados obrigatórios.");
+            throw new IllegalArgumentException("Cliente inválido!");
         }
         return repository.update(client);
+    }
+
+    public Client findById(String id) {
+        Client client = repository.findById(id);
+        if (client == null) {
+            throw new RuntimeException("Cliente não encontrado!");
+        }
+        return client;
+    }
+
+    public Client findByDocument(String document) {
+        Client client = repository.findByDocument(document);
+        if (client == null) {
+            throw new RuntimeException("Cliente não encontrado!");
+        }   
+        return client;
     }
 }
