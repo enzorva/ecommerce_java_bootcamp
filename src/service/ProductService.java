@@ -3,43 +3,44 @@ package service;
 
 import model.Product;
 import repository.ProductRepository;
-import repository.InMemoryProductRepository;
-
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
 
 public class ProductService {
     private final ProductRepository repository;
 
-    public ProductService(InMemoryProductRepository repository) {
+    public ProductService(ProductRepository repository) {
         this.repository = repository;
     }
 
-    public Product create(String name, String sku, String description, BigDecimal price) {
-        if (repository.findBySku(sku).isPresent()) {
-            throw new IllegalArgumentException("Já existe produto com o SKU informado.");
-        }
-        Product p = new Product(name, sku, description, price);
-        return repository.save(p);
+    public Product create(Product product) {      
+        return repository.save(product);
     }
 
     public List<Product> listAll() {
         return repository.findAll();
     }
 
-    public Product getById(UUID id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Produto não encontrado."));
+    public Product getById(String id) {
+        Product p = repository.findById(id);
+        if (p == null) {
+            throw new RuntimeException("Produto não encontrado.");
+        }
+        return p;
     }
 
-    public Product update(UUID id, String name, String sku, String description, BigDecimal price, Boolean active) {
-        Product existing = getById(id);
-        if (sku != null && repository.existsBySkuDifferentId(sku, id)) {
-            throw new IllegalArgumentException("SKU já utilizado por outro produto.");
+    public Product update(Product product) {
+        Product p = repository.findBySku(product.getSku());
+        if (p == null) {
+            throw new IllegalArgumentException("Produto inválido!");
         }
-        existing.update(name, sku, description, price, active);
-        return repository.update(existing);
+        return repository.update(product);
+    }
+
+    public Product getBySku(String sku) {
+        Product p = repository.findBySku(sku);
+        if (p == null) {
+            throw new RuntimeException("Produto não encontrado.");
+        }
+        return p;
     }
 }
