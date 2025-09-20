@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 import controller.ClientControllerImpl;
 import controller.ClientMenu;
 import controller.Menu;
