@@ -1,28 +1,36 @@
 package model;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class Item {
-    private String itemId;
-    private String itemName;
+    private String id;
+    private Product product; // Referência ao produto
     private int quantity;
-    private double unitPrice;
+    private double unitPrice; // preço de venda definido no pedido
 
-    // Porque tirar a inicializacao do itemId do construtor e jogar para o ItemService assim como eu fiz no Order
-    public String getItemId() {
-        return itemId;
+    public Item(Product product, int quantity, double unitPrice) {
+        this.id = UUID.randomUUID().toString();
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
     }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
+    public void setId(String id) {
+        this.id = id;
+    }    
+    
+    public String getId() {
+        return id;
     }
 
-    public String getItemName() {
-        return itemName;
-    }
 
-    public void setItemName() {
-        this.itemName = itemName;
+    public Product getProduct() {
+        return product;
+    }       
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public int getQuantity() {
@@ -39,5 +47,14 @@ public class Item {
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + "\nDescrição: " + product.getDescription() + "\nQuantidade: " + quantity + "\nPreço Unitário: " + unitPrice;
+    }
+
+    public BigDecimal total() {
+        return BigDecimal.valueOf(unitPrice * quantity);
     }
 }
