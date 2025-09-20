@@ -12,16 +12,16 @@ public class OrderRepository implements Repository<Order, String> {
 
     @Override
     public Order save(Order order) {
-        storage.put(order.getOrderId(), order);
+        storage.put(order.getId(), order);
         return order;
     }
 
     @Override
     public Order update(Order order) {
-        if (!storage.containsKey(order.getOrderId())) {
+        if (!storage.containsKey(order.getId())) {
             throw new IllegalArgumentException("Pedido nao encontrado para atualizacao");
         }
-        storage.put(order.getOrderId(), order);
+        storage.put(order.getId(), order);
         return order;
     }
 
@@ -31,7 +31,7 @@ public class OrderRepository implements Repository<Order, String> {
     }
 
     @Override
-    public Order findById(String orderId) {
-        return storage.get(Integer.valueOf(orderId));
+    public Order findById(String id) {
+        return storage.get(id);
     }
 }
