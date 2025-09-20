@@ -8,22 +8,24 @@ import java.math.BigDecimal;
 
 public interface OrderController {
 
-    Order createOrder(Client client);
+    public Order createOrder(Client client);
 
-    void addItem(Item item, Order order);
+    public void listAllOrders();
 
-    void updateItem(Item oldItem, Item newItem, Order order);
+    public void addItem(Item item, Order order);
 
-    void deleteItem(Item item, Order order);
+    public void updateItem(Item oldItem, Item newItem, Order order);
 
-    Order closeOrder(Order order);
+    public void deleteItem(Item item, Order order);
 
-    void startPayment(Order order);
+    public Order closeOrder(Order order);
 
-    void endPayment(Order order);
+    public void startPayment(Order order);
 
-    BigDecimal getTotalPrice(Order order);
+    public void endPayment(Order order);
 
-    void delivery(Order order);
+    public BigDecimal getTotalPrice(Order order);
+
+    public void delivery(Order order);
 }
 
