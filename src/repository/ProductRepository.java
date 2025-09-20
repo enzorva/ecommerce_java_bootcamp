@@ -2,15 +2,41 @@ package repository;
 
 import model.Product;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-public interface ProductRepository {
-    Product save(Product product);
-    Optional<Product> findById(UUID id);
-    Optional<Product> findBySku(String sku);
-    List<Product> findAll();
-    Product update(Product product);
-    boolean existsBySkuDifferentId(String sku, UUID differentId);
+public class ProductRepository implements Repository<Product, String> {
+
+        private final Map<String, Product> products = new HashMap<>();
+
+    @Override
+    public Product save(Product product) {
+        products.put(product.getId(), product);
+        return product;
+    }
+
+    @Override
+    public Product update(Product product) {
+        if (!products.containsKey(product.getId())) {
+            throw new RuntimeException("Produto não encontrado para atualização!");
+        }
+        products.put(product.getId(), product);
+        return product;
+    }
+
+    @Override
+    public List<Product> findAll() {
+        return new ArrayList<>(products.values());
+    }
+
+    @Override
+    public Product findById(String id) {
+        return products.get(id);
+    }
+
+    public Product findBySku(String sku) {
+        return products.values().stream()
+            .filter(c -> c.getSku().equals(sku))
+            .findFirst()
+            .orElse(null);
+    }
 }
