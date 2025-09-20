@@ -2,66 +2,68 @@ package model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class Order {
-    String orderId;
-    String clientId;
-    List<Item> itemList;
-    OrderStatus orderStatus;
-    PaymentStatus paymentStatus;
-    LocalDateTime creationDate;
+    private final String id;
+    private final Client client;
+    private final Map<String, Item> itens;
+    private BigDecimal totalAmount;
+    private OrderStatus orderStatus;
+    private PaymentStatus paymentStatus;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public Order() {
+    public Order(Client client) {
+        this.id = UUID.randomUUID().toString();
+        this.client = client;
+        this.itens = new HashMap<>();
+        this.totalAmount = BigDecimal.ZERO;
+        this.orderStatus = OrderStatus.ABERTO;
+        this.paymentStatus = PaymentStatus.PENDENTE;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getId() { 
+        return id; 
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public LocalDateTime getCreatedAt() { 
+        return createdAt; 
     }
 
-    public String getClientId() {
-        return clientId;
+    public OrderStatus getOrderStatus() { 
+        return orderStatus; 
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
+    public PaymentStatus getPaymentStatus() { 
+        return paymentStatus; 
     }
 
-    public List<Item> getItemList() {
-        return itemList;
+    public Client getClient() { 
+        return client; 
     }
 
-    public void setItemList(List<Item> itemList) {
-        this.itemList = itemList;
+    public Map<String, Item> getItens() { 
+        return itens; 
     }
 
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
+    public BigDecimal getTotalAmount() { 
+        return totalAmount; 
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
+    public LocalDateTime getUpdatedAt() { 
+        return updatedAt; 
     }
 
-    public PaymentStatus getPaymentStatus() {
-        return paymentStatus;
+    public void setOrderStatus(OrderStatus status) { 
+        this.orderStatus = status; 
     }
 
-    public void setPaymentStatus(PaymentStatus paymentStatus) {
-        this.paymentStatus = paymentStatus;
+    public void setPaymentStatus(PaymentStatus status) { 
+        this.paymentStatus = status; 
     }
-
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
-
 }
