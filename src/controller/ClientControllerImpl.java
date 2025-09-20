@@ -22,7 +22,7 @@ public class ClientControllerImpl implements ClientController {
 
     @Override
     public Client createClient(ClientType type) {
-        System.out.println("=== Cadastro de Cliente ===");
+        System.out.println("===== Cadastro de Cliente =====");
         System.out.print("Nome: ");
         String name = scanner.nextLine();
         System.out.print("Email: ");
@@ -41,8 +41,9 @@ public class ClientControllerImpl implements ClientController {
             String cnpj = scanner.nextLine();        
             client = new ClientPJ(name, email, phone, cnpj);
     
-        } 
-        return clientService.register(client);      
+        }
+        System.out.println("Cliente cadastrado com sucesso!"); 
+        return clientService.create(client);
     }
 
     @Override
@@ -68,7 +69,6 @@ public class ClientControllerImpl implements ClientController {
         client.setPhone(scanner.nextLine());
 
         clientService.update(client);
-
         System.out.println("Cliente atualizado com sucesso!");
     }
 
@@ -79,7 +79,5 @@ public class ClientControllerImpl implements ClientController {
         String document = scanner.nextLine();
         Client client = clientService.findByDocument(document);
         System.out.println(client);
-    }
-
-    
+    }    
 }
