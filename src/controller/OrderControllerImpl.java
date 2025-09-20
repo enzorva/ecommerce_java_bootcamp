@@ -3,68 +3,81 @@ package controller;
 import model.Client;
 import model.Item;
 import model.Order;
-import service.OrderService;
 
+import repository.OrderRepository;
+import service.OrderService;
 import java.math.BigDecimal;
 
 public class OrderControllerImpl implements OrderController {
 
     private final OrderService orderService;
 
-    public OrderControllerImpl(OrderService orderService) {
-        this.orderService = orderService;
+    public OrderControllerImpl(OrderRepository repository) {
+
+        this.orderService = new OrderService(repository);
     }
 
     @Override
     public Order createOrder(Client client) {
-        return orderService.createOrder(client);
+        Order order = new Order(client);
+        return orderService.create(order);
     }
 
     @Override
     public void addItem(Item item, Order order) {
-        orderService.addItem(item, order);
+        orderService.addItem(order, item);
+        System.out.println("Item adicionado com sucesso!");
     }
 
     @Override
     public void updateItem(Item oldItem, Item newItem, Order order) {
-        if (order.getItemList().contains(oldItem)) {
-            int index = order.getItemList().indexOf(oldItem);
-            order.getItemList().set(index, newItem);
-        } else {
-            throw new IllegalArgumentException("Item não encontrado no pedido");
-        }
+        // Remove o antigo e adiciona o novo
+        orderService.removeItem(order, oldItem.getId());
+        orderService.addItem(order, newItem);
+        System.out.println("Item atualizado com sucesso!");
     }
 
     @Override
     public void deleteItem(Item item, Order order) {
-        if (!order.getItemList().remove(item)) {
-            throw new IllegalArgumentException("Item não encontrado no pedido");
-        }
+        orderService.removeItem(order, item.getId());
+        System.out.println("Item removido com sucesso!");
     }
 
     @Override
     public Order closeOrder(Order order) {
-        return orderService.closeOrder(order);
+        Order closed = orderService.closeOrder(order);
+        System.out.println("Pedido fechado. Status: " + closed.getOrderStatus() + " | Pagamento: " + closed.getPaymentStatus());
+        return closed;
     }
 
     @Override
     public void startPayment(Order order) {
-        orderService.startPayment(order);
+        orderService.confirmPayment(order);
+        System.out.println("Pagamento iniciado.");
     }
 
     @Override
     public void endPayment(Order order) {
-        orderService.endPayment(order);
+        orderService.confirmPayment(order);
+        System.out.println("Pagamento finalizado e pedido atualizado!");
     }
 
     @Override
     public BigDecimal getTotalPrice(Order order) {
-        return orderService.getTotalOrderPrice(order);
+        BigDecimal total = orderService.calculateTotal(order);
+        System.out.println("Valor total do pedido: R$ " + total);
+        return total;
     }
 
     @Override
     public void delivery(Order order) {
-        orderService.delivery(order);
+        orderService.deliver(order);
+        System.out.println("Pedido entregue ao cliente.");
     }
 
+    @Override
+    public void listAllOrders() {
+        // TODO Auto-generated method stub
+
+    }
 }
