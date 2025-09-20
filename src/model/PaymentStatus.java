@@ -1,7 +1,8 @@
 package model;
 
 public enum PaymentStatus {
-    NAO_INICIADO,
+    PENDENTE,
     AGUARDANDO_PAGAMENTO,
     PAGO,
+    FALHADO
 }
