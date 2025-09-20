@@ -15,7 +15,11 @@ public class ClientService {
         this.validator = validator;
     }
 
-    public Client register(Client client) {
+    public Client create(Client client) {
+        Client c = repository.findByDocument(client.getDocumentIdentification());
+        if (c != null) {
+            throw new IllegalArgumentException("Cliente com este documento já existe!");
+        }
         if (!validator.validate(client)) {
             throw new IllegalArgumentException("Cliente inválido!");
         }
@@ -27,6 +31,10 @@ public class ClientService {
     }
 
     public Client update(Client client) {
+        Client c = repository.findByDocument(client.getDocumentIdentification());
+        if (c == null) {
+            throw new RuntimeException("Cliente não encontrado!");
+        }
         if (!validator.validate(client)) {
             throw new IllegalArgumentException("Cliente inválido!");
         }
@@ -34,18 +42,20 @@ public class ClientService {
     }
 
     public Client findById(String id) {
-        Client client = repository.findById(id);
-        if (client == null) {
+        Client c = repository.findById(id);
+        if (c == null) {
             throw new RuntimeException("Cliente não encontrado!");
         }
-        return client;
+        return c;
     }
 
     public Client findByDocument(String document) {
-        Client client = repository.findByDocument(document);
-        if (client == null) {
+        Client c = repository.findByDocument(document);
+        if (c == null) {
             throw new RuntimeException("Cliente não encontrado!");
         }   
-        return client;
+        return c;
     }
+
+    
 }
