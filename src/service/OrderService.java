@@ -1,70 +1,91 @@
 package service;
 
-import model.*;
 import repository.OrderRepository;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.NoSuchElementException;
 
+import model.Item;
+import model.Order;
+import model.OrderStatus;
+import model.PaymentStatus;
 public class OrderService {
-    private final OrderRepository orderRepository;
 
-    public OrderService(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    private final OrderRepository repository;
+
+    public OrderService(OrderRepository repository) {
+        this.repository = repository;
     }
 
-    public Order createOrder(Client client) {
-        Order order = new Order();
-        order.setOrderId(UUID.randomUUID().toString());
-        order.setOrderStatus(OrderStatus.ABERTO);
-        order.setClientId(client.getId());
-        order.setPaymentStatus(PaymentStatus.NAO_INICIADO);
-        order.setCreationDate(LocalDateTime.now());
-        order.setItemList(new ArrayList<>());
-        System.out.println("Pedido criado com sucesso!");
-        return orderRepository.save(order);
+    /** Cria um novo pedido */
+    public Order create(Order order) {
+        return repository.save(order);
     }
 
-    public void addItem(Item item, Order order) {
-        if (order.getOrderStatus() != OrderStatus.ABERTO) {
-            throw new IllegalStateException("Nao e permitido adicionar itens neste estado");
+    /** Adiciona um item ao pedido */
+    public void addItem(Order order, Item item) {
+        if (order.getOrderStatus() != OrderStatus.ABERTO)
+            throw new IllegalStateException("Items can only be added when order is OPEN");
+
+        Item existent = order.getItens().get(item.getId());
+        if (existent != null) {
+            existent.setQuantity(existent.getQuantity() + item.getQuantity());
+        } else {
+            order.getItens().put(item.getId(), item);
         }
-        order.getItemList().add(item);
+        repository.update(order);
     }
 
-    // E melhor separar closeOrder de startPayment ou mante-los juntos
+    /** Remove item do pedido */
+    public void removeItem(Order order, String productId) {
+        if (order.getOrderStatus() != OrderStatus.ABERTO)
+            throw new IllegalStateException("Items can only be removed when order is OPEN");
+        order.getItens().remove(productId);
+        repository.update(order);
+    }
 
+    /** Altera quantidade de item */
+    public void changeItemQuantity(Order order, String productId, int newQuantity) {
+        if (order.getOrderStatus() != OrderStatus.ABERTO)
+            throw new IllegalStateException("Quantities can only be changed when order is OPEN");
+        Item ip = order.getItens().get(productId);
+        if (ip == null) throw new NoSuchElementException("Item does not exist in order");
+        ip.setQuantity(newQuantity);
+        repository.update(order);
+    }
+
+    /** Calcula o valor total do pedido */
+    public BigDecimal calculateTotal(Order order) {
+        return order.getItens()
+            .values()
+            .stream()
+            .map(Item::total)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /** Fecha o pedido e marca aguardando pagamento */
     public Order closeOrder(Order order) {
-        order.setOrderStatus(OrderStatus.AGUARDANDO_PAGAMENTO);
-        return orderRepository.save(order);
-    }
-
-    public void startPayment(Order order) {
-        if (order.getItemList().isEmpty() || getTotalOrderPrice(order).compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalStateException("Pedido invalido para finalizar");
+        if (order.getItens().isEmpty() || calculateTotal(order).compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("Order must have at least one item and total > 0");
         }
         order.setPaymentStatus(PaymentStatus.AGUARDANDO_PAGAMENTO);
+        order.setOrderStatus(OrderStatus.ABERTO); // Mantém ABERTO até efetivar pagamento
+        return repository.update(order);
     }
 
-    public BigDecimal getTotalOrderPrice(Order order) {
-        return order.getItemList().stream()
-                .map(item -> BigDecimal.valueOf(item.getUnitPrice()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public void endPayment(Order order) {
-        if (order.getPaymentStatus() != PaymentStatus.AGUARDANDO_PAGAMENTO) {
-            throw new IllegalStateException("Aguardando pagamento");
-        }
-        order.setOrderStatus(OrderStatus.FINALIZADO);
+    /** Confirma pagamento */
+    public void confirmPayment(Order order) {
+        if (order.getPaymentStatus() != PaymentStatus.AGUARDANDO_PAGAMENTO)
+            throw new IllegalStateException("Payment can only be confirmed if status is AWAITING_PAYMENT");
         order.setPaymentStatus(PaymentStatus.PAGO);
+        repository.update(order);
     }
 
-    public void delivery(Order order) {
-        if (order.getPaymentStatus() != PaymentStatus.PAGO) {
-            throw new IllegalStateException("Entrega nao permitida sem pagamento");
-        }
+    /** Entrega o pedido */
+    public void deliver(Order order) {
+        if (order.getPaymentStatus() != PaymentStatus.PAGO)
+            throw new IllegalStateException("Order can only be delivered after payment");
+        order.setOrderStatus(OrderStatus.FINALIZADO);
+        repository.update(order);
     }
 }
