@@ -8,21 +8,22 @@ import java.util.List;
 import java.util.Map;
 
 public class ItemRepository implements Repository<Item, String>{
+    
     private final Map<String, Item> storage = new HashMap<>();
 
     @Override
     public Item save(Item item) {
-        storage.put(item.getItemId(), item);
+        storage.put(item.getId(), item);
         return item;
     }
 
     @Override
     public Item update(Item item) {
-        if (!storage.containsKey(item.getItemId())) {
+        if (!storage.containsKey(item.getId())) {
             throw new IllegalArgumentException("Item nao foi encontrado");
         }
         // O que estou fazendo aqui
-        storage.put(item.getItemId(), item);
+        storage.put(item.getId(), item);
         return item;
     }
 
@@ -35,5 +36,9 @@ public class ItemRepository implements Repository<Item, String>{
     public Item findById(String id) {
         // Pq aqui fica diferente do OrderRepository
         return storage.get(id);
+    }
+
+    public void delete(String id) {
+        storage.remove(id);
     }
 }
