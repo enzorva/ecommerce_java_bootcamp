@@ -7,9 +7,9 @@ public class Item {
     private String id;
     private Product product; // Referência ao produto
     private int quantity;
-    private double unitPrice; // preço de venda definido no pedido
+    private BigDecimal unitPrice; // preço de venda definido no pedido
 
-    public Item(Product product, int quantity, double unitPrice) {
+    public Item(Product product, int quantity, BigDecimal unitPrice) {
         this.id = UUID.randomUUID().toString();
         this.product = product;
         this.quantity = quantity;
@@ -41,11 +41,11 @@ public class Item {
         this.quantity = quantity;
     }
 
-    public double getUnitPrice() {
+    public BigDecimal getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(double unitPrice) {
+    public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
 
@@ -55,6 +55,6 @@ public class Item {
     }
 
     public BigDecimal total() {
-        return BigDecimal.valueOf(unitPrice * quantity);
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
 }
