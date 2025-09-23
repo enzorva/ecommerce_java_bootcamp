@@ -1,3 +1,4 @@
+// controller/OrderController.java
 package controller;
 
 import model.Client;
@@ -5,27 +6,35 @@ import model.Item;
 import model.Order;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface OrderController {
 
-    public Order createOrder(Client client);
+    Order createOrder(Client client);
 
-    public void listAllOrders();
+    void addItem(Item item, Order order);
 
-    public void addItem(Item item, Order order);
+    void updateItem(Item oldItem, Item newItem, Order order);
 
-    public void updateItem(Item oldItem, Item newItem, Order order);
+    void deleteItem(Item item, Order order);
 
-    public void deleteItem(Item item, Order order);
+    Order closeOrder(Order order);
 
-    public Order closeOrder(Order order);
+    void startPayment(Order order);
 
-    public void startPayment(Order order);
+    void endPayment(Order order);
 
-    public void endPayment(Order order);
+    BigDecimal getTotalPrice(Order order);
 
-    public BigDecimal getTotalPrice(Order order);
+    void delivery(Order order);
 
-    public void delivery(Order order);
+    void listAllOrders();
+
+    Order getById(String id);
+
+    void changeItemQuantity(Order order, String productId, int newQuantity);
+
+    List<Order> listAll();
 }
+
 
