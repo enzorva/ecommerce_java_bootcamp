@@ -1,8 +1,11 @@
+import controller.ClientController;
 import controller.ClientControllerImpl;
 import controller.ClientMenu;
 import controller.Menu;
+import controller.OrderController;
 import controller.OrderControllerImpl;
 import controller.OrderMenu;
+import controller.ProductController;
 import controller.ProductControllerImpl;
 import controller.ProductMenu;
 import repository.ClientRepository;
@@ -22,14 +25,13 @@ public class Main {
         ProductRepository productRepository = new ProductRepository();
         OrderRepository orderRepository = new OrderRepository();
 
-        ClientControllerImpl clientController = new ClientControllerImpl(clientRepository, clientValidator);
-        ProductControllerImpl productController = new ProductControllerImpl(productRepository);
-        OrderControllerImpl orderController = new OrderControllerImpl(orderRepository);
-
+        ClientController clientController = new ClientControllerImpl(clientRepository, clientValidator);
+        ProductController productController = new ProductControllerImpl(productRepository);
+        OrderController orderController = new OrderControllerImpl(orderRepository);
 
         Menu clientMenu = new ClientMenu(clientController);
         Menu productMenu = new ProductMenu(productController);
-        Menu orderMenu = new OrderMenu(orderController, clientRepository);
+        Menu orderMenu = new OrderMenu(orderController, clientRepository, productRepository);
 
         while (true) {
             System.out.println("\n===== MENU PRINCIPAL =====");

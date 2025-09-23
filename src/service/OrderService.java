@@ -3,6 +3,7 @@ package service;
 import repository.OrderRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import model.Item;
@@ -17,26 +18,40 @@ public class OrderService {
         this.repository = repository;
     }
 
-    /** Cria um novo pedido */
+    /** Cria um novo pedido **/
     public Order create(Order order) {
         return repository.save(order);
     }
 
-    /** Adiciona um item ao pedido */
+    /** Lista todos os pedidos **/
+    public List<Order> listAll() {
+        return repository.findAll();
+    }
+
+    public Order getById(String id) {
+        Order order = repository.findById(id);
+        if (order == null) throw new RuntimeException("Pedido não encontrado!");
+        return order;
+    }
+
+    /** Adiciona um item ao pedido (chave por productId) */
     public void addItem(Order order, Item item) {
         if (order.getOrderStatus() != OrderStatus.ABERTO)
             throw new IllegalStateException("Items can only be added when order is OPEN");
 
-        Item existent = order.getItens().get(item.getId());
-        if (existent != null) {
-            existent.setQuantity(existent.getQuantity() + item.getQuantity());
+        String productId = item.getProduct().getId();
+        Item existingItem = order.getItens().get(productId);
+        if (existingItem != null) {
+            existingItem.setQuantity(existingItem.getQuantity() + item.getQuantity());
+            existingItem.setUnitPrice(item.getUnitPrice());
         } else {
-            order.getItens().put(item.getId(), item);
+            item.setId(productId);
+            order.getItens().put(productId, item);
         }
         repository.update(order);
     }
 
-    /** Remove item do pedido */
+    /** Remove item do pedido pelo productId */
     public void removeItem(Order order, String productId) {
         if (order.getOrderStatus() != OrderStatus.ABERTO)
             throw new IllegalStateException("Items can only be removed when order is OPEN");
@@ -44,7 +59,7 @@ public class OrderService {
         repository.update(order);
     }
 
-    /** Altera quantidade de item */
+    /** Altera quantidade de item pelo productId */
     public void changeItemQuantity(Order order, String productId, int newQuantity) {
         if (order.getOrderStatus() != OrderStatus.ABERTO)
             throw new IllegalStateException("Quantities can only be changed when order is OPEN");
@@ -69,7 +84,7 @@ public class OrderService {
             throw new IllegalStateException("Order must have at least one item and total > 0");
         }
         order.setPaymentStatus(PaymentStatus.AGUARDANDO_PAGAMENTO);
-        order.setOrderStatus(OrderStatus.ABERTO); // Mantém ABERTO até efetivar pagamento
+        order.setOrderStatus(OrderStatus.AGUARDANDO_PAGAMENTO); // não permite mais alterações
         return repository.update(order);
     }
 
